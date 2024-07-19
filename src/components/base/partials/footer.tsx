@@ -1,9 +1,10 @@
 import { memo } from "react";
 
 const Footer = () => (
-    <h4 className="global-padding text-center py-3 text-blue-800 bg-amber-400 font-normal">
-        © 2024 Click Sale. All Rights Reserved. by Zyad Ahmed.
-    </h4>
+    <div className="flex flex-col justify-center items-center">
+        <p>avatar</p>
+        <p className="text-xs"> © 2024 Click Sale. All Rights Reserved</p>
+    </div>
 )
 
 export default memo(Footer)

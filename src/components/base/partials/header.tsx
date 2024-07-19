@@ -3,8 +3,8 @@ import Image from 'next/image';
 import Link from "next/link";
 
 const Header = () => (
-    <div className="global-padding w-full py-5 bg-blue-800 text-white text-lg flex justify-between items-center">
-        <Link href="/home" className="flex justify-start items-center gap-2 w-1/6 cursor-pointer">
+    <div className="global-padding w-5/6 p-3 text-lg flex justify-center bg-white/80 rounded-xl items-center">
+        <Link href="/home" className="flex justify-start items-center gap-2 cursor-pointer">
             <Image
                 src="/logo.jpeg"
                 alt="Dummy Image"
@@ -12,12 +12,9 @@ const Header = () => (
                 height={20}
                 className="rounded-3xl shadow-lg"
             />
-            <p className="">Click Sale</p>
+            <p>Click Sale</p>
         </Link>
-        <h1>Server Dev test nenenene</h1>
-        <div className="w-1/6 flex justify-end items-center">
-            icons
-        </div>
+        {/* <h1>Server Dev test nenenene</h1> */}
     </div>
 )
 
