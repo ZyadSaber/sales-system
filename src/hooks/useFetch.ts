@@ -13,7 +13,7 @@ const useFetch = ({
   skipQuery,
 }: useFetchProp) => {
   const apiLink = process.env.REACT_APP_API_LINK;
-  const [data, setData] = useState<RecordWithAnyData>();
+  const [data, setData] = useState<RecordWithAnyData | RecordWithAnyData[]>();
   const [loading, setLoading] = useState(false);
   const baseNextParams = params || {};
   const previousParams = usePrevious(baseNextParams);
