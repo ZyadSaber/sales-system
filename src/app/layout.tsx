@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google"
+import { Inter as FontSans } from "next/font/google";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import BasePage from "@/components/base"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const fontSans = FontSans({
