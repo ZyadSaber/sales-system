@@ -30,12 +30,13 @@ const BaseTable = ({
     pagination = 10,
     onSelectRow,
     onDoubleClick,
-    infoHidden, deleteHidden,
+    infoHidden = true,
+    deleteHidden,
     editHidden,
     addHidden,
-    printHidden,
-    pdfHidden,
-    excelHidden,
+    printHidden = true,
+    pdfHidden = true,
+    excelHidden = true,
     infoDisabled,
     deleteDisabled,
     editDisabled,
@@ -52,7 +53,10 @@ const BaseTable = ({
     onExcel,
     editableTable,
     onTableChange,
-    hideTableHeader = true
+    hideTableHeader = true,
+    SaveHidden,
+    saveDisabled,
+    onSave
 }: BaseTableProps) => {
 
     const [page, setPage] = useState(0);
@@ -93,8 +97,10 @@ const BaseTable = ({
             {!hideTableHeader && <TableHeader
                 {...{
                     infoHidden, deleteHidden, editHidden, addHidden, printHidden, pdfHidden, excelHidden,
-                    infoDisabled, deleteDisabled, editDisabled, addDisabled, printDisabled, pdfDisabled,
-                    excelDisabled, onInfo, onDelete, onEdit, onAdd, onPrint, onPdf, onExcel
+                    infoDisabled, deleteDisabled: !selectedRow || deleteDisabled, editDisabled, addDisabled, printDisabled, pdfDisabled,
+                    excelDisabled, onInfo, onDelete, onEdit, onAdd, onPrint, onPdf, onExcel, editableTable, SaveHidden,
+                    saveDisabled,
+                    onSave
                 }}
             />}
             <TableContainer sx={{ maxHeight: height }} ref={elementRef}>

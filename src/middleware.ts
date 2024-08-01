@@ -1,7 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 export default async function middleware(req: NextRequest) {
-  // console.log(req);
+  const headerList = headers();
+
+  const auth = headerList.get("token");
+  // console.log(auth);
 
   return NextResponse.next();
 }

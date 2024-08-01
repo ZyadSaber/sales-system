@@ -1,8 +1,8 @@
-import { memo, forwardRef, useImperativeHandle, useState, useCallback } from "react";
-import { useFetch, useFormManager } from "@/hooks";
+import { memo, forwardRef, useImperativeHandle, useMemo, useCallback, useState } from "react";
+import { useFetch } from "@/hooks";
 import { RecordWithAnyData } from "@/types";
 import BaseTable from "./BaseTable"
-import { TableDataRecord } from "./interface"
+import { TableForwardedRefType, TableWithApiProps } from "./interface"
 
 const TableWithApi = (
     {
@@ -10,24 +10,17 @@ const TableWithApi = (
         params,
         rowKey,
         ...restTableProps
-    }: any,
-    ref: any
+    }: TableWithApiProps,
+    ref: TableForwardedRefType
 ) => {
 
-    const { values, onChange, setState } = useFormManager({
-        initialValues: {
-            count: 0,
-            data: []
-        }
-    })
+    const [tableData, setTableData] = useState<RecordWithAnyData[]>([])
 
-    const { data, count } = values
+    const handleResponse = useCallback((e: RecordWithAnyData[]) => {
+        setTableData(e)
+    }, [])
 
-    const handleResponse = useCallback((e: TableDataRecord) => {
-        setState(e)
-    }, [setState])
-
-    const { loading } = useFetch({
+    const { loading, runFetch } = useFetch({
         apiId,
         fetchOnFirstRun: true,
         onResponse: handleResponse,
@@ -35,25 +28,36 @@ const TableWithApi = (
     })
 
     const handleTableChange = useCallback(({ index, changeProps: { name, value } }: RecordWithAnyData) => {
-        const computedArray = data.map((record: RecordWithAnyData) => {
+        const computedArray = tableData.map((record: RecordWithAnyData) => {
             if (record?.[rowKey] === index) {
                 return {
                     ...record,
-                    [name]: value
+                    [name]: value,
+                    record_status: record?.record_status === 'q' ? "u" : "n"
                 }
             }
             return record
         })
-        onChange({
-            name: "data",
-            value: computedArray
-        })
-    }, [data, onChange, rowKey])
+        setTableData(prev => ({
+            ...prev,
+            data: computedArray
+        }))
+    }, [rowKey, tableData])
+
+    const foundDataSource = useMemo(() => tableData, [tableData]);
+
+    useImperativeHandle(ref, () => ({
+        runFetch,
+        setTableData,
+        resetTableData: () => setTableData([]),
+        getCurrentDataSource: () => foundDataSource,
+    }));
+
 
     return (
         <BaseTable
-            dataSource={data}
-            totalRecords={count}
+            dataSource={tableData}
+            totalRecords={tableData?.length}
             loading={loading}
             onTableChange={handleTableChange}
             rowKey={rowKey}
@@ -62,4 +66,5 @@ const TableWithApi = (
     )
 }
 
+// @ts-ignore ignore react "forwardRef" for misleading types.
 export default memo(forwardRef(TableWithApi))

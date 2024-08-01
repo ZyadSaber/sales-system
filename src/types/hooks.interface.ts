@@ -13,6 +13,23 @@ export interface useFetchProp {
   skipQuery?: boolean;
 }
 
+interface DataResponseType {
+  error?: string;
+  errorCode?: string;
+  response?: RecordWithAnyData;
+}
+
+export interface useMutationProps {
+  apiId: keyof typeof API_ID;
+  onResponse?: (dataResponse?: DataResponseType) => void;
+  method?: string;
+}
+
+export interface postFunctionProps {
+  data: RecordWithAnyData;
+  cb?: (dataResponse: DataResponseType) => void;
+}
+
 export interface fetchFunParamType {
   params?: RecordWithAnyData;
 }

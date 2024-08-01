@@ -1,3 +1,5 @@
+import { MutableRefObject, Dispatch, SetStateAction } from "react";
+import { API_ID } from "@/global";
 import { RecordWithAnyData, ChangeEvent } from "@/types";
 
 export interface Columns {
@@ -11,6 +13,7 @@ export interface Columns {
 }
 
 export interface TableHeaderProps {
+  editableTable?: boolean;
   infoHidden?: boolean;
   deleteHidden?: boolean;
   editHidden?: boolean;
@@ -18,6 +21,7 @@ export interface TableHeaderProps {
   printHidden?: boolean;
   pdfHidden?: boolean;
   excelHidden?: boolean;
+  SaveHidden?: boolean;
   infoDisabled?: boolean;
   deleteDisabled?: boolean;
   editDisabled?: boolean;
@@ -25,6 +29,7 @@ export interface TableHeaderProps {
   printDisabled?: boolean;
   pdfDisabled?: boolean;
   excelDisabled?: boolean;
+  saveDisabled?: boolean;
   onInfo?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
@@ -32,24 +37,28 @@ export interface TableHeaderProps {
   onPrint?: () => void;
   onPdf?: () => void;
   onExcel?: () => void;
+  onSave?: () => void;
 }
 
-export interface BaseTableProps extends TableHeaderProps {
+export interface BaseTableProps extends SharedTableProps {
   dataSource: RecordWithAnyData[];
-  columns: Columns[];
   loading?: boolean;
+  totalRecords: number;
+}
+
+export interface SharedTableProps extends TableHeaderProps {
+  columns: Columns[];
   rowKey: string;
   width?: string;
   margin?: string;
   padding?: string;
   height?: string;
-  totalRecords: number;
   noPagination?: boolean;
   pagination?: number;
   hideTableHeader?: boolean;
   onSelectRow?: (record: RecordWithAnyData) => void;
   onDoubleClick?: (record: RecordWithAnyData) => void;
-  editableTable?: boolean;
+
   onTableChange?: (ChangeEvent: {
     index: number;
     record: RecordWithAnyData;
@@ -71,7 +80,18 @@ export interface UseTablePaginationProps {
   noPagination?: boolean;
 }
 
-export interface TableDataRecord {
-  data: RecordWithAnyData[] | [];
-  count: number;
+export interface TableForwardedValuesForRef {
+  runFetch: any;
+  setTableData: Dispatch<SetStateAction<RecordWithAnyData[]>>;
+  getCurrentDataSource: () => RecordWithAnyData[];
+  resetTableData: () => void;
+}
+
+export type TableForwardedRefType = MutableRefObject<
+  TableForwardedValuesForRef | undefined
+>;
+
+export interface TableWithApiProps extends SharedTableProps {
+  apiId: keyof typeof API_ID;
+  params?: RecordWithAnyData;
 }
