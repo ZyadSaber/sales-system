@@ -1,4 +1,4 @@
-import { memo, forwardRef, useImperativeHandle, useMemo, useCallback, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useCallback, useState } from "react";
 import { useFetch } from "@/hooks";
 import { RecordWithAnyData } from "@/types";
 import BaseTable from "./BaseTable"
@@ -33,15 +33,12 @@ const TableWithApi = (
                 return {
                     ...record,
                     [name]: value,
-                    record_status: record?.record_status === 'q' ? "u" : "n"
+                    record_status: record.record_status === "q" || record.record_status === "u" ? "u" : "n"
                 }
             }
             return record
         })
-        setTableData(prev => ({
-            ...prev,
-            data: computedArray
-        }))
+        setTableData(computedArray)
     }, [rowKey, tableData])
 
     const foundDataSource = useMemo(() => tableData, [tableData]);
@@ -67,4 +64,4 @@ const TableWithApi = (
 }
 
 // @ts-ignore ignore react "forwardRef" for misleading types.
-export default memo(forwardRef(TableWithApi))
+export default forwardRef(TableWithApi)

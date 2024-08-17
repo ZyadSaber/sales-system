@@ -25,13 +25,13 @@ const NumberInput = ({
     }, [name, onChange])
 
     const handleIncrement = useCallback(() => {
-        if (max && value < max) {
+        if ((max && value < max) || !max) {
             handleChange(value + 1);
         }
     }, [handleChange, max, value]);
 
     const handleDecrement = useCallback(() => {
-        if (min && value > min) {
+        if ((min && value > min) || !min) {
             handleChange(value - 1);
         }
     }, [handleChange, min, value]);

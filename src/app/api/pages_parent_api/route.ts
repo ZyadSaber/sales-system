@@ -7,12 +7,11 @@ export async function GET() {
   try {
     const data = await prisma.page_parent.findMany({
       where: {
-        hidden: false,
-        app_pages: {
-          some: {
-            page_disabled: false,
-          },
-        },
+        // app_pages: {
+        //   some: {
+        //     page_disabled: false,
+        //   },
+        // },
       },
       orderBy: {
         page_parent_index: "asc",
@@ -30,7 +29,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     await body.forEach(
-      ({
+      async ({
         record_status,
         page_parent_name,
         hidden,
@@ -39,13 +38,35 @@ export async function POST(request: NextRequest) {
       }: RecordWithAnyData) => {
         switch (record_status) {
           case "n":
-            prisma.page_parent.create({
+            await prisma.page_parent.create({
               data: {
                 page_parent_name,
                 hidden,
-                page_parent_index,
+                page_parent_index: +page_parent_index,
               },
             });
+            break;
+
+          case "u":
+            await prisma.page_parent.update({
+              where: {
+                page_parent_id,
+              },
+              data: {
+                page_parent_name,
+                hidden,
+                page_parent_index: +page_parent_index,
+              },
+            });
+            break;
+
+          case "d":
+            await prisma.page_parent.delete({
+              where: {
+                page_parent_id,
+              },
+            });
+            break;
 
           default:
             break;
@@ -53,7 +74,6 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    console.log(body);
     return new Response(JSON.stringify(request));
   } catch (error) {
     console.log(error);

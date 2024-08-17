@@ -7,7 +7,8 @@ import {
     TableContainer,
     TableHead,
     TablePagination,
-    TableRow
+    TableRow,
+    CircularProgress
 } from '@mui/material';
 import { useBoundingClientRect } from "@/hooks";
 import { RecordWithAnyData, ChangeEvent } from '@/types';
@@ -93,7 +94,10 @@ const BaseTable = ({
     }, [onDoubleClick]);
 
     return (
-        <Paper sx={{ width, overflow: 'hidden', margin, padding }}>
+        <Paper sx={{ width, overflow: 'hidden', margin, padding }} className='relative'>
+            {loading && <div className="w-full flex justify-center items-center absolute z-10 top-0 h-full bg-gray-400/10">
+                <CircularProgress />
+            </div>}
             {!hideTableHeader && <TableHeader
                 {...{
                     infoHidden, deleteHidden, editHidden, addHidden, printHidden, pdfHidden, excelHidden,

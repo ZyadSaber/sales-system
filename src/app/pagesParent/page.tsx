@@ -36,17 +36,23 @@ const PagesParent = () => {
         mutate({
             data: tableDataToSave,
             cb: ({ error }) => {
-                console.log(error)
+                fetchTableData()
             }
         })
-    }, [getTableData, mutate])
+    }, [fetchTableData, getTableData, mutate])
 
     const handleDelete = useCallback(() => {
         const computedObj = {
             ...selectedRow,
             record_status: 'd'
         }
-    }, [selectedRow])
+        mutate({
+            data: [computedObj],
+            cb: ({ error }) => {
+                fetchTableData()
+            }
+        })
+    }, [fetchTableData, mutate, selectedRow])
 
     return (
         <>
