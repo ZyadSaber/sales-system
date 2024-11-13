@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const { signInController, validateTokenController } = require("./controller");
 
-router.get("/signIn", (req, res) => {
-  res.json({ message: "hiiiiii" });
-});
+router.post("/sign_in", signInController);
+router.get("/validate_token", validateTokenController);
 
 module.exports = router;
