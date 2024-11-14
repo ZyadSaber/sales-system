@@ -2,15 +2,14 @@ import { RecordWithAnyValue } from "../../../types";
 import useAppConfigStore from "./useAppConfig";
 
 const useSetAuthConfigData = () => {
-  const { setAuthProviderContextData, state } = useAppConfigStore();
+  const { setAuthProviderContextData } = useAppConfigStore();
 
-  const setAuthConfigData = (values: RecordWithAnyValue) => {
+  return (values: RecordWithAnyValue) => {
     setAuthProviderContextData((prev) => ({
       ...prev,
       ...values,
     }));
   };
-  return { setAuthConfigData };
 };
 
 export default useSetAuthConfigData;

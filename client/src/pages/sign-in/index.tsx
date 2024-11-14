@@ -10,8 +10,10 @@ import { validate } from "./constants";
 
 const SignInPage = () => {
   const navigate = useNavigate()
-  const { handlePost } = usePost()
-  const { setAuthConfigData } = useSetAuthConfigData()
+  const { handlePost } = usePost({
+    apiId: "POST_LOG_IN_USER"
+  })
+  const setAuthConfigData = useSetAuthConfigData()
 
 
   const handleSubmit = () => {
@@ -39,12 +41,7 @@ const SignInPage = () => {
   return (
     <div className="w-full h-screen bg-slate-900 shadow-lg flex justify-center items-center">
       <div className="flex justify-center items-center w-1/4 bg-slate-100 rounded-md px-6 flex-col gap-4 py-14">
-        <img
-          src="/logo.png"
-          alt="logo"
-          loading="lazy"
-          width={100}
-        />
+        <img src="/logo.png" alt="" width={100} className="border-4 rounded-full " />
         <h1 className="text-3xl font-bold">ERP System</h1>
         <p>Welcome, please sign in</p>
         <div className="flex flex-col gap-3 w-4/5">

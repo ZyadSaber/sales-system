@@ -2,9 +2,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const verifyJWT = (req, res, next) => {
-  console.log(req.path);
+  const pathToIgnore = ["/auth/sign_in", "/auth/validate_token"];
+  if (pathToIgnore.includes(req.path)) {
+    return next();
+  }
+
   const authHeader = req.headers["authorization"];
-  console.log(authHeader);
+
   if (!authHeader?.startsWith("Bearer ")) {
     return res.sendStatus(401);
   }

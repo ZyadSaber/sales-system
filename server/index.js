@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const mainRouter = require("./router/router");
 const { logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
@@ -10,6 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(logger);
 // app.use(express.urlencoded({ extends: false }));
 app.use(express.json());
+app.use(cookieParser());
 
 // const whiteList = [
 //   process.env.domain,

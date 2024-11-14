@@ -42,13 +42,14 @@ const signInController = async (req, res) => {
       );
 
       delete foundUser?.password;
+      delete foundUser?.refresh_token;
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({
         ...foundUser,
-        accessToken,
+        access_token: accessToken,
       });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
@@ -59,11 +60,111 @@ const signInController = async (req, res) => {
   }
 };
 
-const validateTokenController = (req, res) => {
-  return res.json({ message: "ok" });
+const validateTokenController = async (req, res) => {
+  const cookies = req.cookies;
+  const refreshToken = cookies?.jwt;
+
+  if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
+
+  const { rows } = await pool.query(
+    "SELECT * FROM users WHERE refresh_token = $1 LIMIT 1;",
+    [refreshToken]
+  );
+
+  const [foundUser] = rows;
+
+  if (!foundUser) return res.status(403);
+
+  jwt.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET,
+    (err, { user_name }) => {
+      if ((err, foundUser.user_name !== user_name)) return res.status(403);
+
+      const accessToken = jwt.sign(
+        {
+          user_name,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "15m",
+        }
+      );
+
+      delete foundUser?.password;
+      delete foundUser?.refresh_token;
+
+      res.json({
+        ...foundUser,
+        access_token: accessToken,
+        site_name: process.env.SITE_NAME,
+        branch_name: "test branch",
+      });
+    }
+  );
+};
+
+const getMenuTreeController = async (req, res) => {
+  try {
+    const { rows } = await pool.query(` 
+SELECT 
+    pp.parent_id,
+    pp.parent_name,
+    sp.page_id,
+    sp.page_name,
+    sp.page_path
+FROM 
+    page_parent pp
+LEFT JOIN 
+    system_page sp ON pp.parent_id = sp.parent_id
+
+WHERE 
+	pp.is_active IS NOT FALSE AND sp.is_active IS NOT FALSE
+ORDER BY 
+    pp.parent_order, sp.page_id;
+`);
+
+    let computedMenu = [];
+
+    rows.forEach((record) => {
+      const ifFoundItem = computedMenu.find(
+        (item) => item.parent_id === record.parent_id
+      );
+      if (ifFoundItem) {
+        computedMenu.map((computedRecord) => {
+          if (computedRecord.parent_id === ifFoundItem.parent_id) {
+            computedRecord.linked_page.push({
+              page_id: record.page_id,
+              page_name: record.page_name,
+              page_path: record.page_path,
+            });
+          }
+          return record;
+        });
+        return;
+      }
+      computedMenu.push({
+        parent_id: record.parent_id,
+        parent_name: record.parent_name,
+        linked_page: [
+          {
+            page_id: record.page_id,
+            page_name: record.page_name,
+            page_path: record.page_path,
+          },
+        ],
+      });
+    });
+
+    res.json(computedMenu);
+  } catch (err) {
+    console.error(err);
+    res.send(err);
+  }
 };
 
 module.exports = {
   signInController,
   validateTokenController,
+  getMenuTreeController,
 };

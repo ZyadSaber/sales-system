@@ -3,7 +3,7 @@ const router = express.Router();
 const { join } = require("path");
 const verifyJWT = require("../middleware/verifyJWT");
 
-router.use(verifyJWT);
+// router.use(verifyJWT);
 
 router.use("/auth", require("./auth/index"));
 

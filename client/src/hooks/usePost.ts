@@ -1,23 +1,25 @@
 import { useState } from "react";
 import axios from "axios";
+import { useGetAccessToken } from "../context/auth";
+import { API_ID } from "../constants";
 
-/**
- * usePost is a custom hook that provides functionality to make POST requests.
- *
- * @returns {object} An object with the following properties:
- *   - `handlePost`: A function that takes an object containing `data` and `cb` (callback).
- *     It performs a POST request to the "/api/auth/sign_in" endpoint with the provided data.
- *     The callback is invoked with the response or error data.
- *   - `loading`: A boolean indicating the loading state of the POST request.
- */
-const usePost = () => {
+interface usePostProps {
+  apiId: keyof typeof API_ID;
+}
+
+const usePost = ({ apiId }: usePostProps) => {
   const [loading, setLoading] = useState(false);
+  const accessToken = useGetAccessToken();
+  const API_TEXT = API_ID[apiId];
 
   const handlePost = ({ data, cb }: any) => {
     setLoading(true);
+    if (!API_TEXT) return setLoading(false);
     axios
-      .post("/api/auth/sign_in", {
-        ...data,
+      .post(`/api/${API_TEXT}`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       })
       .then((response) => {
         cb?.({ response: response.data });
