@@ -59,7 +59,9 @@ const signInController = async (req, res) => {
   }
 };
 
-const validateTokenController = () => {};
+const validateTokenController = (req, res) => {
+  return res.json({ message: "ok" });
+};
 
 module.exports = {
   signInController,
