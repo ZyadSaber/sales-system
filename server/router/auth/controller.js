@@ -143,16 +143,19 @@ ORDER BY
         });
         return;
       }
+      const linked_page = !record.page_id
+        ? []
+        : [
+            {
+              page_id: record.page_id,
+              page_name: record.page_name,
+              page_path: record.page_path,
+            },
+          ];
       computedMenu.push({
         parent_id: record.parent_id,
         parent_name: record.parent_name,
-        linked_page: [
-          {
-            page_id: record.page_id,
-            page_name: record.page_name,
-            page_path: record.page_path,
-          },
-        ],
+        linked_page,
       });
     });
 

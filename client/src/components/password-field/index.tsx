@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react";
-import { TextField, IconButton, TextFieldProps } from "@mui/material";
+import { TextField, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { InputFieldProps } from "../../types"
 
@@ -8,7 +8,7 @@ const InputField = ({ name, value, handleChange, wrapperClassName, ...props }: I
     (event: any) => {
       handleChange?.({ name, value: event.target.value });
     },
-    [name, handleChange]
+    []
   );
 
   const [showPassword, setShowPassword] = useState(false);

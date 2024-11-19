@@ -22,9 +22,9 @@ const SignInPage = () => {
         user_name,
         password
       },
-      cb: (({ error, response: response }) => {
-        notification(error ? "error" : "success", error?.message)
-        if (!error) {
+      cb: (({ error, response, hasError }) => {
+        notification(hasError ? "error" : "success", error?.message || "Error with log in")
+        if (!hasError) {
           setAuthConfigData(response)
           navigate(response?.default_page || "/home")
         }

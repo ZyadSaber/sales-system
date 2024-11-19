@@ -1,11 +1,9 @@
 import useAppConfigStore from "./useAppConfig";
 
 const useGetAccessToken = () => {
-  const {
-    state: { access_token },
-  } = useAppConfigStore();
+  const { state } = useAppConfigStore();
 
-  return access_token;
+  return state?.access_token;
 };
 
 export default useGetAccessToken;

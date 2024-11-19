@@ -5,6 +5,8 @@ const API_ID = {
   POST_LOG_IN_USER: "auth/sign_in",
   //http://localhost:5000/api/auth/get_menu_tree
   GET_MENU_TREE: "auth/get_menu_tree",
+  //http://localhost:5000/api/customers/get_customer_data
+  GET_CUSTOMERS_TABLE_DATA: "customers/get_customer_data",
 };
 
 export default API_ID;

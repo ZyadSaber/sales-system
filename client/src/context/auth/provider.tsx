@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useFetch, useInterval } from "../../hooks";
 import Store from "./helper/store";
 import { initialContextValues } from "./constants";
+import LoadingOverlay from "../../components/loading-overlay";
 
 const AppConfigProvider = ({ children }: { children: React.ReactNode }) => {
     const [state, setContext] =
@@ -11,11 +12,15 @@ const AppConfigProvider = ({ children }: { children: React.ReactNode }) => {
 
     const {
         runQuery,
+        loading
     } = useFetch({
         apiId: "GET_VALIDATE_TOKEN",
         callOnFirstRender: true,
         onResponse: ({ apiValues, error }) => {
             !error ? setContext(apiValues) : navigate("/")
+            if (error || !apiValues) {
+                navigate("/")
+            }
         },
     })
 
@@ -23,9 +28,15 @@ const AppConfigProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <Store.Provider
-            value={{ state, setAuthProviderContextData: setContext }}
+            value={{
+                state,
+                //@ts-ignore
+                setAuthProviderContextData: setContext
+        }}
         >
-            {children}
+            {
+                loading ? <LoadingOverlay loading className="h-screen w-screen" />: children
+            }
         </Store.Provider>
     );
 };

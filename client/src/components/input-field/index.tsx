@@ -1,15 +1,13 @@
-import { memo, useCallback } from "react";
-import { TextField } from "@mui/material";
+import { useCallback, memo } from 'react';
+import TextField from "@mui/material/TextField";
 import { InputFieldProps } from "../../types"
 
 const InputField = ({ name, value, handleChange, ...props }: InputFieldProps) => {
-  const _handleChange = useCallback(
-    (event: any) => {
+  const _handleChange =
+    useCallback((event: any) => {
       handleChange?.({ name, value: event.target.value });
-    },
-    [name, handleChange]
-  );
-
+    }
+      , [handleChange, name]);
   return (
     <TextField
       onChange={_handleChange}

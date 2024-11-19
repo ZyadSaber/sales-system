@@ -25,7 +25,7 @@ const usePost = ({ apiId }: usePostProps) => {
         cb?.({ response: response.data });
       })
       .catch((error) => {
-        cb?.({ error: error.response.data });
+        cb?.({ error: error.response.data, hasError: true });
       })
       .finally(() => {
         setLoading(false);

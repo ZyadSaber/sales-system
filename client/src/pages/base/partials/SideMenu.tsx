@@ -14,11 +14,12 @@ const SideMenu = () => {
         initialValues: initialState
     })
 
-    const { state: {
+    const { state } = useAppConfig()
+    const {
         site_name,
         default_page,
         branch_name
-    } } = useAppConfig()
+    } = state || {}
 
     const { loading } = useFetch({
         apiId: "GET_MENU_TREE",
