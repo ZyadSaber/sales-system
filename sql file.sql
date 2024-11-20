@@ -30,20 +30,20 @@ CREATE TABLE suppliers_data (
 
 SELECT * FROM suppliers_data
 
-SELECT 
+SELECT
     pp.parent_id,
     pp.parent_name,
     sp.page_id,
     sp.page_name,
     sp.is_active AS page_is_active
-FROM 
+FROM
     page_parent pp
-LEFT JOIN 
+LEFT JOIN
     system_page sp ON pp.parent_id = sp.parent_id
 
-WHERE 
+WHERE
 	pp.is_active IS NOT FALSE
-ORDER BY 
+ORDER BY
     pp.parent_id, sp.page_id;
 
 
@@ -52,3 +52,5 @@ ADD COLUMN parent_order INT NOT NULL DEFAULT 1;
 
 
 SELECT * FROM system_page
+
+SELECT * FROM page_parent;

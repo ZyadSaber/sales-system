@@ -1,8 +1,9 @@
-import {useFormManager} from "../../hooks"
+import { memo } from "react"
+import { useFormManager } from "../../hooks"
 import InputField from "../../components/input-field"
 import SearchAndClearIcon from "../../components/search-and-clear-icon"
-import {QueryTable, useCreateTableActionRef} from "../../components/table"
-import {tableColumns} from "./constants"
+import { QueryTable, useCreateTableActionRef } from "../../components/table"
+import { tableColumns } from "./constants"
 
 const CustomersPage = () => {
 
@@ -25,17 +26,17 @@ const CustomersPage = () => {
         }
     })
 
-    // const handleSearch = ()=>{
-    //     // fetchTableData({
-    //     //     customer_name,
-    //     //     phone_number
-    //     // })
-    // }
-    //
-    // const handleReset = ()=>{
-    //     resetTableData()
-    //     resetValues()
-    // }
+    const handleSearch = () => {
+        fetchTableData({
+            customer_name,
+            phone_number
+        })
+    }
+
+    const handleReset = () => {
+        resetTableData()
+        resetValues()
+    }
 
     return (
         <>
@@ -60,8 +61,8 @@ const CustomersPage = () => {
                 />
 
                 <SearchAndClearIcon
-                    // onPressClear={handleReset}
-                    // onPressSearch={handleSearch}
+                    onPressClear={handleReset}
+                    onPressSearch={handleSearch}
                 />
             </div>
 
@@ -75,4 +76,4 @@ const CustomersPage = () => {
     )
 }
 
-export default CustomersPage
+export default memo(CustomersPage)

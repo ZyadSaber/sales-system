@@ -9,11 +9,11 @@ interface SearchAndClearIconProps {
 }
 
 const SearchAndClearIcon = ({
-                                onPressSearch,
-                                onPressClear,
-                                showSearchIcon = true,
-                                showClearIcon = true,
-                            }) => {
+    onPressSearch,
+    onPressClear,
+    showSearchIcon = true,
+    showClearIcon = true,
+}: SearchAndClearIconProps) => {
     return (
         <div className="flex gap-2 items-center justify-center flex-wrap">
             {showSearchIcon &&

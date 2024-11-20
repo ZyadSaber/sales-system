@@ -1,13 +1,20 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import Alert from '@mui/material/Alert';
 import ReactDOM from 'react-dom/client';
+
+interface AlertComponentProps {
+    message?: string,
+    status: "success" | "info" | "warning" | "error",
+    onClose: () => void,
+    duration?: number
+}
 
 const AlertComponent = ({
     message,
     status,
     onClose,
     duration
-}: any) => {
+}: AlertComponentProps) => {
     useEffect(() => {
         const timerId = setTimeout(onClose, duration || 3000);
         return () => clearTimeout(timerId);
@@ -21,14 +28,14 @@ const AlertComponent = ({
     )
 }
 
-const notification = (status: string, message?: string, duration?: number) => {
+const notification = (status: "success" | "info" | "warning" | "error", message?: string, duration?: number) => {
     const root = document.createElement('div');
     document.body.appendChild(root);
     const rootElement = ReactDOM.createRoot(root);
 
-    const onClose = () => {
+    const onClose = useCallback(() => {
         rootElement.unmount();
-    };
+    }, [])
 
     rootElement.render(
         <AlertComponent

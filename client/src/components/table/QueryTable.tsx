@@ -1,33 +1,73 @@
-import React, {
+import {
     useImperativeHandle,
     forwardRef,
     useMemo,
-    useState,
+    memo,
+    useCallback,
 } from "react";
-import {useFetch} from "../../hooks";
+import { useFetch, useFormManager } from "../../hooks";
 import BaseTable from "./BaseTable";
+import { RecordWithAnyValue } from "../../types"
 
 const TableWithApi = (
     {
         apiId,
         callOnFirstRender = false,
-        params,
+        params: _params,
+        disableCheckFormParams,
         ...tableProps
     }: any,
     ref: any
 ) => {
 
-    const [{dataSource, rowCount}, setDataSource] = useState({
-        dataSource: [],
-        rowCount: 0,
+    const {
+        values: {
+            dataSource,
+            rowCount,
+            currentPage,
+            limit
+        },
+        handleChange,
+        handleMultipleChange,
+        resetValues
+    } = useFormManager({
+        initialValues: {
+            dataSource: [],
+            rowCount: 0,
+            limit: 10,
+            currentPage: 0
+        }
     })
 
-    const {runQuery, loading} = useFetch({
+    const handleNextPage = useCallback((_: unknown, newPage: number) => {
+        handleChange({
+            name: "currentPage",
+            value: newPage
+        })
+    }, [handleChange])
+
+    const handleRowsPerPage = useCallback((_: unknown, { props: { children } }: any) => {
+        handleChange({
+            name: "limit",
+            value: children
+        })
+    }, [handleChange])
+
+    const paginationProp = {
+        limit,
+        offset: currentPage,
+    }
+
+    const { runQuery, loading } = useFetch({
         apiId,
         callOnFirstRender,
-        params,
-        onResponse: ({apiValues, hasError}) => {
-            !hasError && setDataSource({
+        disableCheckFormParams,
+        params: {
+            ...paginationProp,
+            ..._params,
+        },
+        onResponse: ({ apiValues, hasError }) => {
+            !hasError && handleMultipleChange({
                 dataSource: apiValues?.data,
                 rowCount: apiValues?.total_records,
             })
@@ -36,16 +76,17 @@ const TableWithApi = (
 
     const foundDataSource = useMemo(() => dataSource, [dataSource]);
 
-    const resetTableData = () => {
-        setDataSource({
-            dataSource: [],
-            rowCount: 0,
+    const handleRequestQuery = (params: RecordWithAnyValue) => {
+        resetValues()
+        runQuery({
+            ...params,
+            ...paginationProp,
         })
     }
 
     useImperativeHandle(ref, () => ({
-        runQuery,
-        resetTableData,
+        runQuery: handleRequestQuery,
+        resetTableData: resetValues,
         getCurrentDataSource: () => foundDataSource,
     }));
 
@@ -54,8 +95,11 @@ const TableWithApi = (
             dataSource={dataSource}
             loading={loading}
             paginationCount={rowCount}
+            currentPage={currentPage}
+            onPageChange={handleNextPage}
+            onRowsPerPageChange={handleRowsPerPage}
             {...tableProps}
         />
     );
 };
-export default forwardRef(TableWithApi);
+export default memo(forwardRef(TableWithApi));
