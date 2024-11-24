@@ -7,7 +7,8 @@ import {
 } from "react";
 import { useFetch, useFormManager } from "../../hooks";
 import BaseTable from "./BaseTable";
-import { RecordWithAnyValue } from "../../types"
+import { RecordWithAnyValue, } from "../../types"
+import { TableWithApiProps, TableChangeInputProps } from "./interface"
 
 const TableWithApi = (
     {
@@ -15,8 +16,11 @@ const TableWithApi = (
         callOnFirstRender = false,
         params: _params,
         disableCheckFormParams,
+        rowKey,
+        onTableInputChange,
+        onPressAdd,
         ...tableProps
-    }: any,
+    }: TableWithApiProps,
     ref: any
 ) => {
 
@@ -90,15 +94,46 @@ const TableWithApi = (
         getCurrentDataSource: () => foundDataSource,
     }));
 
+    const handleInputChange = useCallback((event: TableChangeInputProps) => {
+        handleChange({
+            name: "dataSource",
+            value: dataSource.map((item: RecordWithAnyValue) =>
+                item[rowKey] === event.rowKeyOfTheRecord ?
+                    {
+                        ...item,
+                        [event.inputData.name]: event.inputData.value,
+                        record_status: item.record_status === "q" ? "u" : "n",
+                    } :
+                    item
+            )
+        })
+    }, [handleChange, dataSource, rowKey])
+
+    const handleAdd = useCallback(() => {
+        handleChange({
+            name: "dataSource",
+            value: [
+                {
+                    record_status: "n",
+                    [rowKey]: `${rowKey}_${Date.now()}`
+                },
+                ...dataSource,
+            ]
+        })
+    }, [handleChange, dataSource, rowKey])
+
     return (
         <BaseTable
-            dataSource={dataSource}
+            {...tableProps}
+            onTableInputChange={onTableInputChange || handleInputChange}
+            dataSource={dataSource || []}
             loading={loading}
             paginationCount={rowCount}
             currentPage={currentPage}
             onPageChange={handleNextPage}
             onRowsPerPageChange={handleRowsPerPage}
-            {...tableProps}
+            rowKey={rowKey}
+            onPressAdd={onPressAdd || handleAdd}
         />
     );
 };

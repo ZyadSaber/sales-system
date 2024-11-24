@@ -6,7 +6,8 @@ const verifyJWT = require("../middleware/verifyJWT");
 // router.use(verifyJWT);
 
 router.use("/auth", require("./auth/index"));
-router.use("/customers", require("./customers/index"));
+router.use("/basic_data", require("./basic-data/index"));
+router.use("/system_management", require("./system-management/index"));
 
 router.use((req, res, next) => {
   if (["POST", "PUT", "DELETE"].includes(req.method)) {

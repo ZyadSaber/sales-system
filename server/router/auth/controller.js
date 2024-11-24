@@ -12,6 +12,7 @@ const signInController = async (req, res) => {
       [user_name]
     );
     const [foundUser] = rows;
+    // console.log(foundUser);
     const isMatch = foundUser
       ? await bcrypt.compare(password, foundUser.password)
       : false;

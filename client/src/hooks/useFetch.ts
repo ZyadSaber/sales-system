@@ -26,8 +26,7 @@ const useFetch = ({
   const baseNextParams = params || {};
   const API_TEXT = API_ID[apiId];
   const queryCalledOnFirstRender = useRef<boolean>(false);
-  const [actualParams, setActualParams] = useState(baseNextParams);
-  const previousParams = usePrevious(actualParams);
+  const previousParams = usePrevious(baseNextParams);
   const latestQueryParamsRef = useRef<RecordWithAnyValue>(baseNextParams);
 
   const hasParamsChanged = useCallback(
@@ -35,16 +34,40 @@ const useFetch = ({
     [baseNextParams, previousParams]
   );
 
-  const runQuery = (_params?: RecordWithAnyValue) => {
+  const buildQueryParams = useCallback((nextParams?: RecordWithAnyValue) => {
+    let finalParams: RecordWithAnyValue = latestQueryParamsRef.current;
+
+    if (nextParams) {
+      finalParams = { ...finalParams, ...nextParams };
+    }
+
+    finalParams = Object.keys(finalParams).reduce((acc, key) => {
+      const paramValue = finalParams[key];
+
+      return {
+        ...acc,
+        [key]: typeof paramValue === "undefined" ? "" : paramValue,
+      };
+    }, {});
+
+    latestQueryParamsRef.current = finalParams;
+    return finalParams;
+  }, []);
+
+  const runQuery = async (_params?: RecordWithAnyValue) => {
     setLoading(true);
+
+    const allParams = buildQueryParams(_params);
+    latestQueryParamsRef.current = allParams;
+
     if (!API_TEXT) return setLoading(false);
-    setActualParams(_params || {});
-    axios
+    // setActualParams(allParams || {});
+    await axios
       .get(`/api/${API_TEXT}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        params: _params ? _params : previousParams,
+        params: _params ? allParams : previousParams,
       })
       .then((response) => {
         onResponse?.({
@@ -66,12 +89,12 @@ const useFetch = ({
       });
   };
 
-  console.log(
-    "hasParamsChanged",
-    hasParamsChanged(),
-    baseNextParams,
-    actualParams
-  );
+  useEffect(() => {
+    latestQueryParamsRef.current = {
+      ...latestQueryParamsRef.current,
+      ...(hasParamsChanged() ? baseNextParams : null),
+    };
+  }, [params, hasParamsChanged]);
 
   useEffect(() => {
     const canRunQueryForFirstRender =
@@ -81,11 +104,9 @@ const useFetch = ({
       (!disableCheckFormParams && hasParamsChanged())
     ) {
       queryCalledOnFirstRender.current = canRunQueryForFirstRender;
-      runQuery({
-        ...actualParams,
-      });
+      runQuery(latestQueryParamsRef.current);
     }
-  }, []);
+  }, [params]);
 
   return {
     runQuery,

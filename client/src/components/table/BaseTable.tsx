@@ -8,37 +8,53 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import LoadingOverlay from "../loading-overlay"
-import { RecordWithAnyValue } from "../../types";
+import TableCellRow from "./partials/TableCellRow"
+import TableHeader from "./partials/TableHeader";
+import { RecordWithAnyValue, ChangePropType } from "../../types";
+import { BaseTableProps } from "./interface";
 
 const BaseTable = ({
     dataSource,
     rowKey,
     columns,
     width = "100%",
-    margin,
+    margin = "10px 0",
     padding,
-    loading,
+    loading = false,
     noPagination,
     onDoubleClick,
-    onCLick,
+    onClick,
     paginationCount,
     rowsPerPage,
     currentPage,
     onPageChange,
-    onRowsPerPageChange
-}: any) => {
+    onRowsPerPageChange,
+    hideTableHeader,
+    editDisabled,
+    deleteDisabled,
+    onTableInputChange,
+    ...props
+}: BaseTableProps) => {
 
     const [selectedIndex, setSelectedIndex] = useState<number>()
 
     const handleClickRow = useCallback((record: RecordWithAnyValue, index: number) => () => {
         setSelectedIndex(index)
-        onCLick?.(record)
-    }, [onCLick])
+        onClick?.(record)
+    }, [onClick])
 
     const handleDoubleClickRow = useCallback((record: RecordWithAnyValue, index: number) => () => {
         setSelectedIndex(index)
         onDoubleClick?.(record)
     }, [onDoubleClick])
+
+    const handleInputChange = useCallback((record: RecordWithAnyValue, rowKeyOfTheRecord: string) => (inputData: ChangePropType) => {
+        onTableInputChange?.({
+            rowKeyOfTheRecord,
+            record,
+            inputData
+        })
+    }, [onTableInputChange])
 
     return (
         <LoadingOverlay loading={loading}>
@@ -47,6 +63,11 @@ const BaseTable = ({
                 margin,
                 padding
             }}>
+                {!hideTableHeader && <TableHeader
+                    {...props}
+                    editDisabled={editDisabled || !selectedIndex}
+                    deleteDisabled={deleteDisabled || !selectedIndex}
+                />}
                 <Table sx={{ minWidth: 650 }} stickyHeader size="small" aria-label="a dense table">
                     <TableHead>
                         <TableRow>
@@ -59,16 +80,21 @@ const BaseTable = ({
                     </TableHead>
                     <TableBody>
                         {
-                            dataSource.map((record: RecordWithAnyValue, index: number) => (
+                            dataSource?.map((record: RecordWithAnyValue) => (
                                 <TableRow
                                     key={record[rowKey]}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    className={`even:bg-gray-100 hover:bg-slate-600 transition duration-0 ${index === selectedIndex && "bg-slate-400"}`}
-                                    onClick={handleClickRow(record, index)}
-                                    onDoubleClick={handleDoubleClickRow(record, index)}
+                                    className={`even:bg-gray-100 hover:bg-slate-600 transition duration-0 ${record[rowKey] === selectedIndex && "bg-slate-400"}`}
+                                    onClick={handleClickRow(record, record[rowKey])}
+                                    onDoubleClick={handleDoubleClickRow(record, record[rowKey])}
                                 >
                                     {columns.map((column: RecordWithAnyValue, index: number) => (
-                                        <TableCell key={index}>{record[column.field]}</TableCell>
+                                        <TableCellRow
+                                            key={index}
+                                            value={record[column.field]}
+                                            column={column}
+                                            onInputChange={handleInputChange(record, record[rowKey])}
+                                        />
                                     ))}
                                 </TableRow>
                             ))
@@ -80,8 +106,8 @@ const BaseTable = ({
                 hidden={noPagination}
                 rowsPerPageOptions={[5, 10, 15, 20, paginationCount]}
                 component="div"
-                count={paginationCount || dataSource.length}
-                rowsPerPage={rowsPerPage || dataSource.length || paginationCount}
+                count={paginationCount || dataSource?.length}
+                rowsPerPage={rowsPerPage || dataSource?.length || paginationCount}
                 page={currentPage || 0}
                 onPageChange={onPageChange}
                 onRowsPerPageChange={onRowsPerPageChange}

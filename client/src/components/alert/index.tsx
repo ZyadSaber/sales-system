@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import Alert from '@mui/material/Alert';
 import ReactDOM from 'react-dom/client';
 
@@ -33,9 +33,9 @@ const notification = (status: "success" | "info" | "warning" | "error", message?
     document.body.appendChild(root);
     const rootElement = ReactDOM.createRoot(root);
 
-    const onClose = useCallback(() => {
-        rootElement.unmount();
-    }, [])
+    const onClose = () => {
+        rootElement.unmount()
+    }
 
     rootElement.render(
         <AlertComponent
