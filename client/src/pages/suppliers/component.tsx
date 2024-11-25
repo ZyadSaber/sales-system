@@ -6,7 +6,7 @@ import { QueryTable, useCreateTableActionRef } from "../../components/table"
 import ModalView from "./partials/ModalView"
 import { tableColumns } from "./constants"
 
-const CustomersPage = () => {
+const SuppliersPage = () => {
 
     const { visible, handleOpen, handleClose } = useVisibleState()
 
@@ -22,26 +22,26 @@ const CustomersPage = () => {
         handleSaveOrUpdateRecord,
         record,
     } = useTablePost({
-        apiId: "POST_CUSTOMERS_TABLE_DATA",
+        apiId: "POST_SUPPLIERS_TABLE_DATA",
         refreshTableData: fetchTableData
     })
 
     const {
         values: {
-            customer_name,
+            supplier_name,
             phone_number
         }, handleChange,
         resetValues
     } = useFormManager({
         initialValues: {
-            customer_name: "",
+            supplier_name: "",
             phone_number: ""
         }
     })
 
     const handleSearch = () => {
         fetchTableData({
-            customer_name,
+            supplier_name,
             phone_number
         })
     }
@@ -64,10 +64,10 @@ const CustomersPage = () => {
                 className="flex border flex-wrap p-3 gap-3"
             >
                 <InputField
-                    value={customer_name}
-                    name="customer_name"
+                    value={supplier_name}
+                    name="supplier_name"
                     handleChange={handleChange}
-                    label="Customer Name"
+                    label="supplier Name"
                     variant="outlined"
                     className="w-[20%]"
                 />
@@ -75,7 +75,7 @@ const CustomersPage = () => {
                     value={phone_number}
                     name="phone_number"
                     handleChange={handleChange}
-                    label="Customer phone"
+                    label="supplier phone"
                     variant="outlined"
                     className="w-[15%]"
                 />
@@ -88,10 +88,10 @@ const CustomersPage = () => {
 
             <QueryTable
                 ref={tableRef}
-                apiId="GET_CUSTOMERS_TABLE_DATA"
+                apiId="GET_SUPPLIERS_TABLE_DATA"
                 callOnFirstRender
                 columns={tableColumns}
-                rowKey="customer_id"
+                rowKey="supplier_id"
                 onClick={handleSelectRecord}
                 onPressDelete={handleDeleteRecord}
                 onPressAdd={handleOpenModal}
@@ -108,4 +108,4 @@ const CustomersPage = () => {
     )
 }
 
-export default memo(CustomersPage)
+export default memo(SuppliersPage)

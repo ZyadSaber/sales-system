@@ -6,6 +6,7 @@ import DashBoardPage from "./pages/dash-board";
 import CustomersPage from "./pages/customers";
 import PageParentSetup from "./pages/page-parent-setup";
 import PagesSetupPage from "./pages/pages-setup";
+import SuppliersPage from "./pages/suppliers";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "pagesSetup",
         element: <PagesSetupPage />,
+      },
+      {
+        path: "suppliers",
+        element: <SuppliersPage />,
       },
     ],
   },

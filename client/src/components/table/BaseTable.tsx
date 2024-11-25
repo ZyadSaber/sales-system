@@ -104,9 +104,9 @@ const BaseTable = ({
             </TableContainer>
             <TablePagination
                 hidden={noPagination}
-                rowsPerPageOptions={[5, 10, 15, 20, paginationCount]}
+                rowsPerPageOptions={[5, 10, 15, 20, +paginationCount]}
                 component="div"
-                count={paginationCount || dataSource?.length}
+                count={+paginationCount || +dataSource?.length}
                 rowsPerPage={rowsPerPage || dataSource?.length || paginationCount}
                 page={currentPage || 0}
                 onPageChange={onPageChange}

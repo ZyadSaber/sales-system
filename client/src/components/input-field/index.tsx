@@ -13,7 +13,8 @@ const InputField = ({ name, value, handleChange, ...props }: InputFieldProps) =>
       onChange={_handleChange}
       name={name}
       value={value}
-      variant="standard"
+      variant="outlined"
+      size='small'
       {...props}
     />
   );

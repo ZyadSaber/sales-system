@@ -54,7 +54,7 @@ const TableCellRow = ({
                 {...inputProps}
             />
         }
-        return value.toString()
+        return value && value.toString()
     }
 
     return (

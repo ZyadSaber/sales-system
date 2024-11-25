@@ -1,12 +1,12 @@
 export const tableColumns = [
   {
-    title: "customer_id",
-    field: "customer_id",
+    title: "supplier_id",
+    field: "supplier_id",
     width: "10%",
   },
   {
-    title: "customer_name",
-    field: "customer_name",
+    title: "supplier_name",
+    field: "supplier_name",
     width: "30%",
   },
   {

@@ -29,12 +29,13 @@ const useTablePost = ({
       recordToUpdateOrSave?: RecordWithAnyValue;
       cb?: () => void;
     }) => {
+      const recordToSave = recordToUpdateOrSave ? recordToUpdateOrSave : record;
       handlePost({
         data: {
           data: [
             {
-              ...(recordToUpdateOrSave ? recordToUpdateOrSave : record),
-              record_status: "d",
+              ...recordToSave,
+              record_status: recordToSave?.record_status === "q" ? "u" : "n",
             },
           ],
         },
