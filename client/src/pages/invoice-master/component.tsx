@@ -1,45 +1,45 @@
 import { memo, useCallback } from "react"
+import { useParams } from "react-router-dom"
 import { useFormManager, usePost } from "../../hooks"
 import SearchAndClearIcon from "../../components/search-and-clear-icon"
 import InputNumber from "../../components/input-number"
 import { BaseTable } from "../../components/table"
-import { tableColumns } from "./constants"
 import alert from "../../components/alert"
 import SelectWithApiQuery from "../../components/select-with-api-query"
 import { ChangePropType, RecordWithAnyValue } from "../../types"
+import { tableColumns, pageEndPoints, initialValues } from "./constants"
 
-const BeginningBalancePage = () => {
+const InvoiceMaster = () => {
+    const { type } = useParams()
+    const {
+        mainListLabel,
+        mainListApi,
+        mainListName,
+        postApi
+    } = pageEndPoints?.[type] || {}
 
     const { handlePost } = usePost({
-        apiId: "POST_NEW_PURCHASE_INVOICE_ITEMS"
+        apiId: postApi
     })
 
     const {
-        values: {
-            supplier_id,
-            phone_number,
-            address,
-            note,
-            currentDataSource,
-            invoice_total,
-            net_total,
-            invoice_discount
-        },
+        values,
         handleChange,
         handleMultipleChange,
         resetValues
     } = useFormManager({
-        initialValues: {
-            supplier_id: "",
-            phone_number: "",
-            address: "",
-            note: "",
-            currentDataSource: [],
-            invoice_total: 0,
-            net_total: 0,
-            invoice_discount: 0
-        }
+        initialValues
     })
+
+    const {
+        phone_number,
+        address,
+        note,
+        invoice_details,
+        invoice_total,
+        net_total,
+        invoice_discount
+    } = values
 
     const handleChangeSelectCustomer = useCallback(({ name, value, record }: ChangePropType) => {
         const { phone_number, address, note } = record || {}
@@ -53,7 +53,7 @@ const BeginningBalancePage = () => {
 
     const onPressAdd = useCallback(() => {
         handleChange({
-            name: "currentDataSource",
+            name: "invoice_details",
             value: [
                 {
                     rowKey: Date.now(),
@@ -61,13 +61,13 @@ const BeginningBalancePage = () => {
                     price: 0,
                     total: 0
                 },
-                ...currentDataSource
+                ...invoice_details
             ]
         })
-    }, [currentDataSource, handleChange])
+    }, [invoice_details, handleChange])
 
     const handleInputChange = useCallback(({ rowKeyOfTheRecord, inputData }: any) => {
-        const computedDataSource = currentDataSource.map((record: RecordWithAnyValue) => {
+        const computedDataSource = invoice_details.map((record: RecordWithAnyValue) => {
 
             if (record.rowKey !== rowKeyOfTheRecord) return record
 
@@ -75,6 +75,10 @@ const BeginningBalancePage = () => {
 
             if (inputData.name === "item_id") {
                 obj.item_unit = inputData.record.item_unit
+                if (type === "salesInvoice" || type === "salesReturn") {
+                    obj.price = inputData.record.item_base_price
+                    obj.total = inputData.record.item_base_price * record.qty
+                }
             } else if (inputData.name === "qty") {
                 obj.total = record.price * inputData.value
             } else if (inputData.name === "price") {
@@ -88,11 +92,11 @@ const BeginningBalancePage = () => {
         const invoiceTotal = computedDataSource.reduce((sum: number, item: RecordWithAnyValue) => sum + item.total, 0);
 
         handleMultipleChange({
-            currentDataSource: computedDataSource,
+            invoice_details: computedDataSource,
             invoice_total: invoiceTotal,
             net_total: invoiceTotal - invoice_discount
         })
-    }, [currentDataSource, handleMultipleChange, invoice_discount])
+    }, [invoice_details, handleMultipleChange, invoice_discount])
 
     const handleDiscountChange = useCallback(({ name, value }: ChangePropType) => {
         handleMultipleChange({
@@ -103,19 +107,13 @@ const BeginningBalancePage = () => {
 
     const handleSave = useCallback(() => {
         handlePost({
-            data: {
-                supplier_id,
-                invoice_details: currentDataSource,
-                invoice_total,
-                net_total,
-                invoice_discount
-            },
+            data: values,
             cb: ({ hasError, error }) => {
                 alert(hasError ? "error" : "success", error?.message)
                 !hasError && resetValues()
             }
         })
-    }, [handlePost, supplier_id, currentDataSource, invoice_total, net_total, invoice_discount, resetValues])
+    }, [handlePost, values, invoice_details, invoice_total, net_total, invoice_discount, resetValues])
 
     return (
         <>
@@ -123,14 +121,14 @@ const BeginningBalancePage = () => {
                 className="flex border flex-wrap p-3 gap-3"
             >
                 <div className="flex gap-2 flex-wrap w-[50%]">
-                    <div className="border py-1.5 w-[8%] text-center rounded border-black/25">{supplier_id}</div>
+                    <div className="border py-1.5 w-[8%] text-center rounded border-black/25">{values[mainListName]}</div>
                     <SelectWithApiQuery
-                        value={supplier_id}
-                        name="supplier_id"
+                        value={values[mainListName]}
+                        name={mainListName}
                         handleChange={handleChangeSelectCustomer}
-                        label="Item Name"
+                        label={mainListLabel}
                         className="w-[30%]"
-                        apiId="GET_SUPPLIERS_LIST"
+                        apiId={mainListApi}
                     />
                     <div className="border py-1.5 px-1 rounded border-black/25 text-center w-[19%]">{phone_number}</div>
                     <div className="border py-1.5 px-1 rounded border-black/25 text-center w-[19%]">{address}</div>
@@ -144,7 +142,7 @@ const BeginningBalancePage = () => {
             </div>
 
             <BaseTable
-                dataSource={currentDataSource}
+                dataSource={invoice_details}
                 columns={tableColumns}
                 rowKey="rowKey"
                 onPressAdd={onPressAdd}
@@ -164,4 +162,4 @@ const BeginningBalancePage = () => {
     )
 }
 
-export default memo(BeginningBalancePage)
+export default memo(InvoiceMaster)
