@@ -7,6 +7,9 @@ import CustomersPage from "./pages/customers";
 import PageParentSetup from "./pages/page-parent-setup";
 import PagesSetupPage from "./pages/pages-setup";
 import SuppliersPage from "./pages/suppliers";
+import ItemsSetupPage from "./pages/items"
+import BeginningBalancePage from "./pages/beginning-balance";
+import PurchaseInvoice from "./pages/purchase-invoice"
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +39,18 @@ export const router = createBrowserRouter([
       {
         path: "suppliers",
         element: <SuppliersPage />,
+      },
+      {
+        path: "itemsSetup",
+        element: <ItemsSetupPage />,
+      },
+      {
+        path: "itemsBeginningBalance",
+        element: <BeginningBalancePage />,
+      },
+      {
+        path: "purchaseInvoice",
+        element: <PurchaseInvoice />,
       },
     ],
   },

@@ -54,3 +54,10 @@ ADD COLUMN parent_order INT NOT NULL DEFAULT 1;
 SELECT * FROM system_page
 
 SELECT * FROM page_parent;
+
+ALTER TABLE purchase_invoice_details
+ADD COLUMN invoice_number INT NOT NULL DEFAULT 1;
+
+ALTER TABLE purchase_invoice_details
+ADD CONSTRAINT fk_invoice_number
+FOREIGN KEY (invoice_number) REFERENCES purchase_invoice_master(invoice_number) ON DELETE SET NULL;

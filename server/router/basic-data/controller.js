@@ -1,4 +1,9 @@
 const pool = require("../../db");
+const {
+  normalizeTableResponse,
+  throwTheError,
+  normalizeList,
+} = require("../../lib");
 
 const getCustomersDataController = async (req, res) => {
   try {
@@ -34,7 +39,7 @@ const getCustomersDataController = async (req, res) => {
 
     res.json({
       total_records: record_count,
-      data: rows,
+      data: normalizeTableResponse(rows),
     });
   } catch (err) {
     console.log(err);
@@ -45,7 +50,7 @@ const getCustomersDataController = async (req, res) => {
 const postCustomersDataController = async (req, res) => {
   try {
     const { data } = req.body;
-    data.forEach(async (record) => {
+    await data.forEach(async (record) => {
       if (record.record_status === "n") {
         await pool.query(
           `
@@ -127,7 +132,7 @@ const getSuppliersDataController = async (req, res) => {
 
     res.json({
       total_records: record_count,
-      data: rows,
+      data: normalizeTableResponse(rows),
     });
   } catch (err) {
     console.log(err);
@@ -138,7 +143,7 @@ const getSuppliersDataController = async (req, res) => {
 const postSuppliersDataController = async (req, res) => {
   try {
     const { data } = req.body;
-    data.forEach(async (record) => {
+    await data.forEach(async (record) => {
       if (record.record_status === "n") {
         await pool.query(
           `
@@ -186,9 +191,129 @@ const postSuppliersDataController = async (req, res) => {
   }
 };
 
+const getItemsDataController = async (req, res) => {
+  try {
+    const { offset, limit, item_name } = req.query;
+
+    const { rows } = await pool.query(
+      `
+            SELECT item_id, item_name, item_base_price, item_unit, note
+            FROM items_data 
+            WHERE (item_name ILIKE '%' || $3 || '%')
+            ORDER BY item_id
+            LIMIT $1 OFFSET $2
+        `,
+      [limit || null, offset * limit || null, item_name || ""]
+    );
+
+    const { rows: total } = await pool.query(
+      `
+            SELECT COUNT(*) AS record_count
+            FROM items_data
+            WHERE (item_name ILIKE '%' || $1 || '%')
+        `,
+      [item_name || ""]
+    );
+    const [{ record_count }] = total;
+
+    res.json({
+      total_records: record_count,
+      data: normalizeTableResponse(rows),
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ error: err });
+  }
+};
+
+const postItemsDataController = async (req, res) => {
+  try {
+    const { data } = req.body;
+    await data.forEach(async (record) => {
+      if (record.record_status === "n") {
+        await pool.query(
+          `
+          INSERT INTO items_data
+          (item_name, item_unit, item_base_price, note)
+          values ($1, $2, $3, $4);
+          `,
+          [
+            record.item_name,
+            record.item_unit,
+            record.item_base_price,
+            record.note,
+          ]
+        );
+      } else if (record.record_status === "u") {
+        await pool.query(
+          `
+          UPDATE items_data SET
+          item_name = $1,
+          item_unit = $2,
+          item_base_price = $3,
+          note = $4
+          WHERE item_id = $5;
+          `,
+          [
+            record.item_name,
+            record.item_unit,
+            record.item_base_price,
+            record.note,
+            record.item_id,
+          ]
+        );
+      } else if (record.record_status === "d") {
+        await pool.query("DELETE FROM items_data WHERE item_id = $1;", [
+          record.item_id,
+        ]);
+      }
+    });
+    res.json({
+      message: "success",
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ error: err });
+  }
+};
+
+const getCustomersListController = async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM customers_data;");
+    res.json(normalizeList(rows, "customer_id", "customer_name", true));
+  } catch (err) {
+    throwTheError(err, res);
+  }
+};
+
+const getSuppliersListController = async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM suppliers_data;");
+    res.json(normalizeList(rows, "supplier_id", "supplier_name", true));
+  } catch (err) {
+    throwTheError(err, res);
+  }
+};
+
+const getItemsListController = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT item_id, item_name, item_unit, item_base_price FROM items_data;"
+    );
+    res.json(normalizeList(rows, "item_id", "item_name", true));
+  } catch (err) {
+    throwTheError(err, res);
+  }
+};
+
 module.exports = {
   getCustomersDataController,
   postCustomersDataController,
   getSuppliersDataController,
   postSuppliersDataController,
+  getItemsDataController,
+  postItemsDataController,
+  getCustomersListController,
+  getItemsListController,
+  getSuppliersListController,
 };

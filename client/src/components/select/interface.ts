@@ -11,6 +11,6 @@ export type SelectItemsProps = SelectProps & {
   name: string;
   value?: string;
   handleChange?: (event: ChangePropType) => void;
-  options: OptionsRecord[];
-  loading?: boolean
+  options?: OptionsRecord[];
+  loading?: boolean;
 };

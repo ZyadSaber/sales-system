@@ -21,6 +21,16 @@ const API_ID = {
   POST_PAGE_SETUP_TABLE_DATA: "system_management/post_page_setup_data",
   GET_SUPPLIERS_TABLE_DATA: "basic_data/get_suppliers_data",
   POST_SUPPLIERS_TABLE_DATA: "basic_data/post_suppliers_data",
+  GET_ITEMS_TABLE_DATA: "basic_data/get_items_data",
+  POST_ITEMS_TABLE_DATA: "basic_data/post_items_data",
+  GET_ITEMS_OPENING_BALANCE_TABLE_DATA:
+    "inventory_management/get_customer_data",
+  POST_ITEMS_OPENING_BALANCE_TABLE_DATA:
+    "inventory_management/post_customer_data",
+  GET_CUSTOMERS_LIST: "basic_data/get_customer_list",
+  GET_SUPPLIERS_LIST: "basic_data/get_supplier_list",
+  GET_ITEMS_LIST: "basic_data/get_items_list",
+  POST_NEW_PURCHASE_INVOICE_ITEMS: "purchase_package/post_customer_invoice",
 };
 
 export default API_ID;

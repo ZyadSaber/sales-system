@@ -20,6 +20,7 @@ const SelectField = ({
 
     return (
         <Select
+            size="small"
             labelId={`${name}_${label}_${value}`}
             id={`${name}_${label}_${value}`}
             value={value}

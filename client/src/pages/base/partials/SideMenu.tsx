@@ -37,7 +37,7 @@ const SideMenu = () => {
     }
 
     return (
-        <div className="w-1/6 h-screen px-2 py-4 bg-slate-800 text-slate-100">
+        <div className="w-1/6 h-screen px-2 py-4 bg-slate-800 text-slate-100 ">
             <LoadingOverlay loading={loading}>
                 <div className="flex items-center justify-center flex-col gap-1.5 mb-5">
                     <Link to={`/${default_page}`} >
@@ -46,26 +46,27 @@ const SideMenu = () => {
                     <h1 className="font-bold text-3xl ">{site_name}</h1>
                     <p>Branch: {branch_name}</p>
                 </div>
-
-                {
-                    menuTree.map(({ parent_id, parent_name, linked_page }, index) => (
-                        <Accordion onChange={handleExpand(index)} expanded={expandedRow === index} className="p-0" key={parent_id} >
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                                className="bg-slate-700 text-white font-semibold"
-                            >
-                                <Typography>{parent_name}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="bg-gray-800 text-white font-semibold flex flex-col gap-2 px-2">
-                                {linked_page.map(item =>
-                                    <Link to={`/${item.page_path}`} className="w-full bg-slate-700 px-3 py-1 rounded hover:bg-slate-500 transition" key={item.page_id}>{item.page_name}</Link>
-                                )}
-                            </AccordionDetails>
-                        </Accordion>
-                    ))
-                }
+                <div className="overflow-x-auto h-3/5">
+                    {
+                        menuTree.map(({ parent_id, parent_name, linked_page }, index) => (
+                            <Accordion onChange={handleExpand(index)} expanded={expandedRow === index} className="p-0" key={parent_id} >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1-content"
+                                    id="panel1-header"
+                                    className="bg-slate-700 text-white font-semibold"
+                                >
+                                    <Typography>{parent_name}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails className="bg-gray-800 text-white font-semibold flex flex-col gap-2 px-2">
+                                    {linked_page.map(item =>
+                                        <Link to={`/${item.page_path}`} className="w-full bg-slate-700 px-3 py-1 rounded hover:bg-slate-500 transition" key={item.page_id}>{item.page_name}</Link>
+                                    )}
+                                </AccordionDetails>
+                            </Accordion>
+                        ))
+                    }
+                </div>
 
             </LoadingOverlay>
         </div>
