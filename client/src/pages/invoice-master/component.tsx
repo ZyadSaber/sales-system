@@ -5,6 +5,7 @@ import SearchAndClearIcon from "../../components/search-and-clear-icon"
 import InputNumber from "../../components/input-number"
 import { BaseTable } from "../../components/table"
 import alert from "../../components/alert"
+import { API_ID } from "../../constants"
 import SelectWithApiQuery from "../../components/select-with-api-query"
 import { ChangePropType, RecordWithAnyValue } from "../../types"
 import { tableColumns, pageEndPoints, initialValues } from "./constants"
@@ -16,10 +17,10 @@ const InvoiceMaster = () => {
         mainListApi,
         mainListName,
         postApi
-    } = pageEndPoints?.[type] || {}
+    } = pageEndPoints?.[type as keyof typeof pageEndPoints] || {}
 
     const { handlePost } = usePost({
-        apiId: postApi
+        apiId: postApi as keyof typeof API_ID
     })
 
     const {
@@ -128,7 +129,7 @@ const InvoiceMaster = () => {
                         handleChange={handleChangeSelectCustomer}
                         label={mainListLabel}
                         className="w-[30%]"
-                        apiId={mainListApi}
+                        apiId={mainListApi as keyof typeof API_ID}
                     />
                     <div className="border py-1.5 px-1 rounded border-black/25 text-center w-[19%]">{phone_number}</div>
                     <div className="border py-1.5 px-1 rounded border-black/25 text-center w-[19%]">{address}</div>

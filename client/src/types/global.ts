@@ -4,7 +4,13 @@ export type RecordWithAnyValue = Record<string, any>;
 
 export type ChangePropType = {
   name: string;
-  value: string | number | boolean | RecordWithAnyValue | RecordWithAnyValue[];
+  value:
+    | string
+    | number
+    | boolean
+    | RecordWithAnyValue
+    | RecordWithAnyValue[]
+    | undefined;
   record?: RecordWithAnyValue;
 };
 

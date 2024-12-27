@@ -8,9 +8,16 @@ import LoadingOverlay from "../../../components/loading-overlay"
 import { useAppConfig } from "../../../context/auth"
 import { useFetch, useFormManager } from './../../../hooks';
 import { initialState } from "../constants"
+import { RecordWithAnyValue } from "../../../types";
 
 const SideMenu = () => {
-    const { values: { menuTree, expandedRow }, handleChange } = useFormManager({
+    const {
+        values: {
+            menuTree,
+            expandedRow
+        },
+        handleChange
+    } = useFormManager({
         initialValues: initialState
     })
 
@@ -29,9 +36,9 @@ const SideMenu = () => {
         }
     })
 
-    const handleExpand = key => () => {
+    const handleExpand = (key: number) => () => {
         if (expandedRow === key)
-            handleChange({ name: "expandedRow", value: "" })
+            handleChange({ name: "expandedRow", value: undefined })
         else
             handleChange({ name: "expandedRow", value: key })
     }
@@ -48,7 +55,7 @@ const SideMenu = () => {
                 </div>
                 <div className="overflow-x-auto h-3/5">
                     {
-                        menuTree.map(({ parent_id, parent_name, linked_page }, index) => (
+                        menuTree.map(({ parent_id, parent_name, linked_page }: RecordWithAnyValue, index: number) => (
                             <Accordion onChange={handleExpand(index)} expanded={expandedRow === index} className="p-0" key={parent_id} >
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
@@ -59,8 +66,8 @@ const SideMenu = () => {
                                     <Typography>{parent_name}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails className="bg-gray-800 text-white font-semibold flex flex-col gap-2 px-2">
-                                    {linked_page.map(item =>
-                                        <Link to={`/${item.page_path}`} className="w-full bg-slate-700 px-3 py-1 rounded hover:bg-slate-500 transition" key={item.page_id}>{item.page_name}</Link>
+                                    {linked_page.map((item: RecordWithAnyValue) =>
+                                        <Link to={`${item.page_path}`} className="w-full bg-slate-700 px-3 py-1 rounded hover:bg-slate-500 transition" key={item.page_id}>{item.page_name}</Link>
                                     )}
                                 </AccordionDetails>
                             </Accordion>

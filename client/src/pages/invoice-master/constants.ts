@@ -21,7 +21,7 @@ export const pageEndPoints = {
     mainListLabel: "customer",
     mainListApi: "GET_CUSTOMERS_LIST",
     mainListName: "customer_id",
-    postApi: "POST_NEW_SALES_INVOICE_ITEMS",
+    postApi: "POST_NEW_SALES_RETURN_ITEMS",
   },
 };
 

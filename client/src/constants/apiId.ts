@@ -31,8 +31,9 @@ const API_ID = {
   GET_SUPPLIERS_LIST: "basic_data/get_supplier_list",
   GET_ITEMS_LIST: "basic_data/get_items_list",
   POST_NEW_PURCHASE_INVOICE_ITEMS: "purchase_package/post_supplier_invoice",
-  POST_NEW_SALES_INVOICE_ITEMS: "sales_package/post_customer_invoice",
   POST_NEW_PURCHASE_RETURN_ITEMS: "purchase_package/post_supplier_return",
+  POST_NEW_SALES_INVOICE_ITEMS: "sales_package/post_customer_invoice",
+  POST_NEW_SALES_RETURN_ITEMS: "sales_package/post_customer_return",
 };
 
 export default API_ID;

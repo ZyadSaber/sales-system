@@ -27,6 +27,7 @@ const useFetch = ({
   const API_TEXT = API_ID[apiId];
   const queryCalledOnFirstRender = useRef<boolean>(false);
   const previousParams = usePrevious(baseNextParams);
+  const prevApiId = usePrevious(apiId);
   const latestQueryParamsRef = useRef<RecordWithAnyValue>(baseNextParams);
 
   const hasParamsChanged = useCallback(
@@ -101,12 +102,13 @@ const useFetch = ({
       !!callOnFirstRender && !queryCalledOnFirstRender.current;
     if (
       canRunQueryForFirstRender ||
-      (!disableCheckFormParams && hasParamsChanged())
+      (!disableCheckFormParams && hasParamsChanged()) ||
+      prevApiId !== apiId
     ) {
       queryCalledOnFirstRender.current = canRunQueryForFirstRender;
       runQuery(latestQueryParamsRef.current);
     }
-  }, [params]);
+  }, [params, apiId]);
 
   return {
     runQuery,
