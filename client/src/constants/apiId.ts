@@ -34,6 +34,9 @@ const API_ID = {
   POST_NEW_PURCHASE_RETURN_ITEMS: "purchase_package/post_supplier_return",
   POST_NEW_SALES_INVOICE_ITEMS: "sales_package/post_customer_invoice",
   POST_NEW_SALES_RETURN_ITEMS: "sales_package/post_customer_return",
+  GET_SALES_PURCHASE_INVOICE_SEARCH_DATA:
+    "reports/get_sales_purchase_invoice_search",
+  GET_ITEM_SUMMARY_DATA: "reports/get_item_summary_report",
 };
 
 export default API_ID;

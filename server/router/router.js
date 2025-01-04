@@ -10,6 +10,7 @@ router.use("/basic_data", require("./basic-data/index"));
 router.use("/system_management", require("./system-management/index"));
 router.use("/purchase_package", require("./purchase-package/index"));
 router.use("/sales_package", require("./sales-package/index"));
+router.use("/reports", require("./reports/index"));
 
 router.use((req, res, next) => {
   if (["POST", "PUT", "DELETE"].includes(req.method)) {
