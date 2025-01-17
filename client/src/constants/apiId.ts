@@ -37,6 +37,10 @@ const API_ID = {
   GET_SALES_PURCHASE_INVOICE_SEARCH_DATA:
     "reports/get_sales_purchase_invoice_search",
   GET_ITEM_SUMMARY_DATA: "reports/get_item_summary_report",
+  GET_CUSTOMER_SUMMARY_DATA: "reports/get_customer_report",
+  GET_SUPPLIER_SUMMARY_DATA: "reports/get_supplier_report",
+  GET_USERS_DATA: "auth/get_users_data",
+  POST_USERS_DATA: "auth/post_users_data",
 };
 
 export default API_ID;

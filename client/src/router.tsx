@@ -12,6 +12,9 @@ import BeginningBalancePage from "./pages/beginning-balance";
 import InvoiceMaster from "./pages/invoice-master"
 import InvoiceSearch from "./pages/invoice-search"
 import ItemReport from "./pages/item-report"
+import CustomerReport from "./pages/customer-report";
+import SupplierReport from "./pages/supplier-report";
+import UsersPage from "./pages/users"
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +64,18 @@ export const router = createBrowserRouter([
       {
         path: "itemReport",
         element: <ItemReport />,
+      },
+      {
+        path: "customerReport",
+        element: <CustomerReport />,
+      },
+      {
+        path: "supplierReport",
+        element: <SupplierReport />,
+      },
+      {
+        path: "users",
+        element: <UsersPage />,
       },
     ],
   },

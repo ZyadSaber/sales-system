@@ -2,6 +2,11 @@ const pool = require("../../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const {
+  throwTheError,
+  getRequestQueryParams,
+  normalizeTableResponse,
+} = require("../../lib");
 
 const signInController = async (req, res) => {
   try {
@@ -12,7 +17,6 @@ const signInController = async (req, res) => {
       [user_name]
     );
     const [foundUser] = rows;
-    // console.log(foundUser);
     const isMatch = foundUser
       ? await bcrypt.compare(password, foundUser.password)
       : false;
@@ -167,8 +171,115 @@ ORDER BY
   }
 };
 
+const getUsersDataController = async (req, res) => {
+  const { limit, offset } = getRequestQueryParams(req);
+  const { rows } = await pool.query(
+    `
+            SELECT 
+
+              user_id,
+              user_name,
+              first_name,
+              second_name, 
+              default_page,
+              is_active
+
+            FROM users
+            ORDER BY user_id
+            LIMIT $1 OFFSET $2
+        `,
+    [limit || null, offset * limit || null]
+  );
+
+  const { rows: total } = await pool.query(
+    `
+            SELECT COUNT(*) AS record_count
+            FROM users
+        `,
+    []
+  );
+  const [{ record_count }] = total;
+
+  res.json({
+    total_records: record_count,
+    data: normalizeTableResponse(rows),
+  });
+};
+
+const postUsersDataController = async (req, res) => {
+  try {
+    const { data } = req.body;
+    data.forEach(async (record) => {
+      let hashedPassword = record.password;
+
+      bcrypt.genSalt(10, async function (err, salt) {
+        bcrypt.hash(hashedPassword, salt, function (err, hash) {
+          hashedPassword = hash;
+        });
+      });
+
+      if (record.record_status === "n") {
+        await pool.query(
+          `INSERT INTO users 
+           (user_name, first_name, second_name, default_page, is_active, password)
+            VALUES
+            ($1, $2, $3, $4, $5, $6)`,
+          [
+            record.user_name,
+            record.first_name,
+            record.second_name,
+            record.default_page,
+            record.is_active,
+            hashedPassword,
+          ]
+        );
+      } else if (record.record_status === "u") {
+        const { rows } = await pool.query(
+          `select password from users where user_id=$1`,
+          record.user_id
+        );
+        const oldUserPassword = rows[0].password;
+
+        await pool.query(
+          `
+          UPDATE users SET
+           user_name = $2,
+            first_name = $3,
+             second_name = $4, 
+             default_page=$5,
+             is_active=$6,
+             password=$7
+             WHERE user_id = $1
+          `,
+          [
+            record.user_id,
+            record.user_name,
+            record.first_name,
+            record.second_name,
+            record.default_page,
+            record.is_active,
+            record?.password ? hashedPassword : oldUserPassword,
+          ]
+        );
+      } else if (record.record_status === "d") {
+        await pool.query("DELETE FROM users WHERE user_id = $1;", [
+          record.user_id,
+        ]);
+      }
+    });
+    res.json({
+      message: "success",
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ error: err });
+  }
+};
+
 module.exports = {
   signInController,
   validateTokenController,
   getMenuTreeController,
+  getUsersDataController,
+  postUsersDataController,
 };

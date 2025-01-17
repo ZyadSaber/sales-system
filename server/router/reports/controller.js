@@ -129,7 +129,7 @@ const getSalesAndPurchaseInvoiceSearch = async (req, res) => {
 };
 
 const getItemSummaryReport = async (req, res) => {
-  const { limit, offset, item_id } = getRequestQueryParams(req);
+  const { limit, offset } = getRequestQueryParams(req);
   const { rows } = await pool.query(
     `
             SELECT *
@@ -155,7 +155,63 @@ const getItemSummaryReport = async (req, res) => {
   });
 };
 
+const getCustomerReport = async (req, res) => {
+  const { limit, offset } = getRequestQueryParams(req);
+  const { rows } = await pool.query(
+    `
+            SELECT *
+            FROM net_customer_sales
+            ORDER BY customer_id
+            LIMIT $1 OFFSET $2
+        `,
+    [limit || null, offset * limit || null]
+  );
+
+  const { rows: total } = await pool.query(
+    `
+            SELECT COUNT(*) AS record_count
+            FROM net_customer_sales
+        `,
+    []
+  );
+  const [{ record_count }] = total;
+
+  res.json({
+    total_records: record_count,
+    data: normalizeTableResponse(rows),
+  });
+};
+
+const getSupplierReport = async (req, res) => {
+  const { limit, offset } = getRequestQueryParams(req);
+  const { rows } = await pool.query(
+    `
+            SELECT *
+            FROM net_supplier_sales
+            ORDER BY supplier_id
+            LIMIT $1 OFFSET $2
+        `,
+    [limit || null, offset * limit || null]
+  );
+
+  const { rows: total } = await pool.query(
+    `
+            SELECT COUNT(*) AS record_count
+            FROM net_supplier_sales
+        `,
+    []
+  );
+  const [{ record_count }] = total;
+
+  res.json({
+    total_records: record_count,
+    data: normalizeTableResponse(rows),
+  });
+};
+
 module.exports = {
   getSalesAndPurchaseInvoiceSearch,
   getItemSummaryReport,
+  getCustomerReport,
+  getSupplierReport,
 };
